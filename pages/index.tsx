@@ -1,15 +1,30 @@
-import Link from 'next/link'
-import Layout from '../components/Layout'
+import { useConnection } from '../src/connection/context';
 
-const IndexPage = () => (
-  <Layout title="Home | Next.js + TypeScript Example">
-    <h1>Hello Next.js 👋</h1>
-    <p>
-      <Link href="/about">
-        <a>About</a>
-      </Link>
-    </p>
-  </Layout>
-)
+const HomePage = () => {
+  const { connectionState, connect } = useConnection();
+  const isError = connectionState.type === 'METAMASK_ERROR';
+  const isConnected = connectionState.type === 'METAMASK_CONNECTED';
 
-export default IndexPage
+  if (isError) {
+    return (
+      <h2>Error: {connectionState.error.message}</h2>
+    );
+  }
+
+  if (isConnected) {
+    return (
+      <>
+        <h2>Your Matamask wallet is connected!</h2>
+        <p>Your wallet address: {connectionState.connection.myWalletAddress}</p>
+      </>
+    );
+  }
+
+  return (
+    <button type="button" onClick={connect}>
+      Connect Metamask
+    </button>
+  )
+}
+
+export default HomePage
